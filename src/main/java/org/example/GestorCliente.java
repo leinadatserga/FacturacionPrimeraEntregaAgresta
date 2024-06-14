@@ -21,7 +21,6 @@ public class GestorCliente {
     }
     public Client readById(Integer id) {
         EntityManager entityManager = GestorGenerico.getEntityManager();
-        //Client cliente = entityManager.find(Client.class, id);
         TypedQuery<Client> query = entityManager.createQuery(
                 "SELECT c FROM Client c LEFT JOIN FETCH c.cart WHERE c.Id = :id", Client.class);
         query.setParameter("id", id);

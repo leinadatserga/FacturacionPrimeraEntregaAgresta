@@ -1,6 +1,8 @@
 package org.example;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+
 import java.time.LocalDateTime;
 
 public class GestorInvoice {
@@ -16,7 +18,10 @@ public class GestorInvoice {
 
     public Invoice readById(Integer id) {
         EntityManager manager = GestorGenerico.getEntityManager();
-        Invoice invoice = manager.find(Invoice.class, id);
+        TypedQuery<Invoice> query = manager.createQuery(
+                "SELECT i FROM Invoice i LEFT JOIN FETCH i.details WHERE i.id = :id", Invoice.class);
+        query.setParameter("id", id);
+        Invoice invoice = query.getSingleResult();
         manager.close();
         return invoice;
     }

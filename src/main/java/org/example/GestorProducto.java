@@ -25,8 +25,6 @@ public class GestorProducto {
     public void addToCart(Client client, Product product) {
         EntityManager manager = GestorGenerico.getEntityManager();
         manager.getTransaction().begin();
-        //client.getCart().add(product);
-        //manager.persist(product);
         Client managedClient = manager.find(Client.class, client.getId());
         Product managedProduct = manager.find(Product.class, product.getId());
         managedClient.addProduct(managedProduct);
