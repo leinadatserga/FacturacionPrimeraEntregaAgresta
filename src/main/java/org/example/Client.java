@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
+@Table(name = "Clients")
 public class Client {
     @Id()
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,20 +25,34 @@ public class Client {
     @Column
     private Integer edad;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "Client_Product",
             joinColumns = @JoinColumn(name = "client_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id")
     )
-    private List<Product> cart = new ArrayList<>();
+    private List<Product> cart;
 
-    public Client() {}
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Invoice> invoices = new ArrayList<>();
+
+    public Client() {
+        this.cart = new ArrayList<>();
+    }
     public Client(String nombre, String apellido, Integer documento, Integer edad) {
+        this();
         this.nombre = nombre;
         this.apellido = apellido;
         this.documento = documento;
         this.edad = edad;
+    }
+
+    public List<Invoice> getInvoices() {
+        return invoices;
+    }
+
+    public void setInvoices(List<Invoice> invoices) {
+        this.invoices = invoices;
     }
 
     public Integer getId() {
@@ -88,12 +103,36 @@ public class Client {
         this.cart = cart;
     }
 
+    public void addProduct(Product product) {
+        this.cart.add(product);
+        product.getClients().add(this);
+    }
+
+    public void removeProduct(Product product) {
+        this.cart.remove(product);
+        product.getClients().remove(this);
+    }
+
+    public void addInvoice(Invoice invoice) {
+        invoices.add(invoice);
+        invoice.setClient(this);
+    }
+
+    public void removeInvoice(Invoice invoice) {
+        invoices.remove(invoice);
+        invoice.setClient(null);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Client client = (Client) o;
-        return Objects.equals(Id, client.Id) && Objects.equals(nombre, client.nombre) && Objects.equals(apellido, client.apellido) && Objects.equals(documento, client.documento) && Objects.equals(edad, client.edad);
+        return Objects.equals(Id, client.Id) &&
+                Objects.equals(nombre, client.nombre) &&
+                Objects.equals(apellido, client.apellido) &&
+                Objects.equals(documento, client.documento) &&
+                Objects.equals(edad, client.edad);
     }
 
     @Override

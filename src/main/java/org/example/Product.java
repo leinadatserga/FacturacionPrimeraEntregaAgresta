@@ -2,6 +2,8 @@ package org.example;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -16,13 +18,20 @@ public class Product {
     private String nombre;
 
     @Column
-    private Integer precio;
+    private Double precio;
 
     @Column
     private Integer stock;
 
-    public Product() {}
-    public Product(String nombre, Integer precio, Integer stock) {
+    @ManyToMany(mappedBy = "cart", fetch = FetchType.LAZY)
+    private List<Client> clients;
+
+    public Product() {
+        this.clients = new ArrayList<>();
+    }
+
+    public Product(String nombre, Double precio, Integer stock) {
+        this();
         this.nombre = nombre;
         this.precio = precio;
         this.stock = stock;
@@ -44,11 +53,11 @@ public class Product {
         this.nombre = nombre;
     }
 
-    public Integer getPrecio() {
+    public Double getPrecio() {
         return precio;
     }
 
-    public void setPrecio(Integer precio) {
+    public void setPrecio(Double precio) {
         this.precio = precio;
     }
 
@@ -58,6 +67,14 @@ public class Product {
 
     public void setStock(Integer stock) {
         this.stock = stock;
+    }
+
+    public List<Client> getClients() {
+        return clients;
+    }
+
+    public void setClients(List<Client> clients) {
+        this.clients = clients;
     }
 
     @Override

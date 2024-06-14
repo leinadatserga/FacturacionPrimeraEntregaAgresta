@@ -8,7 +8,7 @@ import java.util.List;
 
 public class GestorProducto {
 
-    public void create(String nombre, Integer precio, Integer stock) {
+    public void create(String nombre, Double precio, Integer stock) {
         EntityManager manager = GestorGenerico.getEntityManager();
         manager.getTransaction().begin();
         Product product = new Product(nombre, precio, stock);
@@ -18,15 +18,18 @@ public class GestorProducto {
     }
     public List<Product> readAll() {
         EntityManager manager = GestorGenerico.getEntityManager();
-        List<Product> listado = manager.createQuery("From Products", Product.class).getResultList();
+        List<Product> listado = manager.createQuery("From Product", Product.class).getResultList();
         manager.close();
         return listado;
     }
     public void addToCart(Client client, Product product) {
         EntityManager manager = GestorGenerico.getEntityManager();
         manager.getTransaction().begin();
-        client.getCart().add(product);
-        manager.persist(product);
+        //client.getCart().add(product);
+        //manager.persist(product);
+        Client managedClient = manager.find(Client.class, client.getId());
+        Product managedProduct = manager.find(Product.class, product.getId());
+        managedClient.addProduct(managedProduct);
         manager.getTransaction().commit();
         manager.close();
     }
